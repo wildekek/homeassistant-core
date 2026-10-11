@@ -1669,6 +1669,8 @@ CLAUDE.md @home-assistant/core
 /tests/components/search/ @home-assistant/core
 /homeassistant/components/season/ @frenck
 /tests/components/season/ @frenck
+/homeassistant/components/see_a_satellite/ @wildekek
+/tests/components/see_a_satellite/ @wildekek
 /homeassistant/components/select/ @home-assistant/core
 /tests/components/select/ @home-assistant/core
 /homeassistant/components/sense/ @kbickar

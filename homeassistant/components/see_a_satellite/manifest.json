@@ -1,0 +1,12 @@
+{
+  "domain": "see_a_satellite",
+  "name": "See A Satellite Tonight",
+  "codeowners": ["@wildekek"],
+  "config_flow": true,
+  "documentation": "https://www.home-assistant.io/integrations/see_a_satellite",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "loggers": ["see_a_satellite"],
+  "quality_scale": "bronze",
+  "requirements": ["see-a-satellite==0.1.0"]
+}

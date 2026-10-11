@@ -3043,6 +3043,9 @@ screenlogicpy==0.10.2
 # homeassistant.components.backup
 securetar==2026.4.1
 
+# homeassistant.components.see_a_satellite
+see-a-satellite==0.1.0
+
 # homeassistant.components.sendgrid
 sendgrid==6.8.2
 
