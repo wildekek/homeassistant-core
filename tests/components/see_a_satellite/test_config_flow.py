@@ -21,14 +21,14 @@ USER_INPUT = {
 
 @pytest.mark.usefixtures("mock_setup_entry")
 @pytest.mark.parametrize(
-    ("catalog", "checked"),
-    [("brightest", "fetch_site_catalog"), ("public", "fetch_quicksat")],
+    ("catalog", "title"),
+    [("brightest", "52.0277, 5.5583"), ("starlink", "52.0277, 5.5583 Starlink")],
 )
 async def test_user_flow(
     hass: HomeAssistant,
     mock_see_a_satellite: dict[str, AsyncMock],
     catalog: str,
-    checked: str,
+    title: str,
 ) -> None:
     """A location is set up once its catalog is reachable."""
     result = await hass.config_entries.flow.async_init(
@@ -41,7 +41,7 @@ async def test_user_flow(
         result["flow_id"], {**USER_INPUT, "catalog": catalog}
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
-    assert result["title"] == "52.0277, 5.5583"
+    assert result["title"] == title
     assert result["data"] == {
         "latitude": 52.0277,
         "longitude": 5.5583,
@@ -49,7 +49,7 @@ async def test_user_flow(
         "catalog": catalog,
     }
     assert result["result"].unique_id == f"52.0277_5.5583_{catalog}"
-    mock_see_a_satellite[checked].assert_awaited_once()
+    mock_see_a_satellite["fetch_site_catalog"].assert_awaited_once()
 
 
 @pytest.mark.usefixtures("mock_setup_entry")

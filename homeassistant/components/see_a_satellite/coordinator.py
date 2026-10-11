@@ -11,11 +11,9 @@ from see_a_satellite import (
     CloudCover,
     Satellite,
     TransitGroup,
-    build_catalog,
     cloud_cover_at,
     dump_catalog,
     fetch_cloud_cover,
-    fetch_quicksat,
     fetch_site_catalog,
     group_transits,
     parse_site_catalog,
@@ -33,7 +31,6 @@ from homeassistant.util import dt as dt_util
 from homeassistant.util.hass_dict import HassKey
 
 from .const import (
-    CATALOG_PUBLIC,
     CATALOG_REFRESH,
     CATALOG_STARLINK,
     CONF_CATALOG,
@@ -42,7 +39,6 @@ from .const import (
     DEFAULT_MAX_MAGNITUDE,
     DOMAIN,
     LOGGER,
-    MAGNITUDES_REFRESH,
     PREDICTION_REFRESH,
 )
 
@@ -55,8 +51,8 @@ STORAGE_VERSION = 1
 class SatelliteCatalog:
     """A catalog shared by all locations using it, persisted across restarts.
 
-    CelesTrak declines repeated downloads from the same address, so the
-    catalog is downloaded once for every location and kept in storage.
+    The website's author hosts the catalog, so it is downloaded once for all
+    locations and kept in storage instead of on every restart.
     """
 
     def __init__(self, hass: HomeAssistant, name: str) -> None:
@@ -65,8 +61,6 @@ class SatelliteCatalog:
         self.name = name
         self.satellites: list[Satellite] | None = None
         self.updated: datetime | None = None
-        self._magnitudes: dict[int, float] | None = None
-        self._magnitudes_updated: datetime | None = None
         self._lock = asyncio.Lock()
         self._store: Store[dict[str, Any]] = Store(
             hass, STORAGE_VERSION, f"{DOMAIN}.{name}_catalog"
@@ -96,22 +90,9 @@ class SatelliteCatalog:
         self.updated = dt_util.parse_datetime(stored["updated"])
 
     async def _async_refresh(self) -> None:
-        session = async_get_clientsession(self.hass)
-        if self.name == CATALOG_PUBLIC:
-            now = dt_util.utcnow()
-            if (
-                self._magnitudes is None
-                or self._magnitudes_updated is None
-                or now - self._magnitudes_updated >= MAGNITUDES_REFRESH
-            ):
-                self._magnitudes = await fetch_quicksat(session)
-                self._magnitudes_updated = now
-            satellites = await build_catalog(
-                session, magnitudes=self._magnitudes, previous=self.satellites or ()
-            )
-        else:
-            satellites = await fetch_site_catalog(session, self.name)
-        self.satellites = satellites
+        self.satellites = await fetch_site_catalog(
+            async_get_clientsession(self.hass), self.name
+        )
         self.updated = dt_util.utcnow()
         self._store.async_delay_save(self._data_to_save, 10)
 

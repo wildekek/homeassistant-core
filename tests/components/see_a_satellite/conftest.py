@@ -49,26 +49,12 @@ def mock_see_a_satellite(
             new=fetch_site_catalog,
         ),
         patch(
-            "homeassistant.components.see_a_satellite.coordinator.build_catalog",
-            return_value=satellites,
-        ) as build_catalog,
-        patch(
-            "homeassistant.components.see_a_satellite.coordinator.fetch_quicksat",
-            return_value={25544: -1.75},
-        ) as fetch_quicksat,
-        patch(
-            "homeassistant.components.see_a_satellite.config_flow.fetch_quicksat",
-            new=fetch_quicksat,
-        ),
-        patch(
             "homeassistant.components.see_a_satellite.coordinator.fetch_cloud_cover",
             return_value=cloud_cover,
         ) as fetch_cloud_cover,
     ):
         yield {
             "fetch_site_catalog": fetch_site_catalog,
-            "build_catalog": build_catalog,
-            "fetch_quicksat": fetch_quicksat,
             "fetch_cloud_cover": fetch_cloud_cover,
         }
 

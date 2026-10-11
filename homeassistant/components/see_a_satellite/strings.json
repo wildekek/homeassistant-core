@@ -68,7 +68,6 @@
     "catalog": {
       "options": {
         "brightest": "Brightest satellites (from the See A Satellite Tonight website)",
-        "public": "Brightest satellites (built from CelesTrak and Quicksat)",
         "starlink": "Starlink trains (from the See A Satellite Tonight website)"
       }
     }

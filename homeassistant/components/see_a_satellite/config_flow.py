@@ -4,7 +4,7 @@ import logging
 from typing import Any, override
 
 import probatio
-from see_a_satellite import CatalogError, fetch_quicksat, fetch_site_catalog
+from see_a_satellite import CatalogError, fetch_site_catalog
 
 from homeassistant.config_entries import (
     ConfigFlow,
@@ -35,7 +35,6 @@ from homeassistant.helpers.selector import (
 
 from .const import (
     CATALOG_BRIGHTEST,
-    CATALOG_PUBLIC,
     CATALOG_STARLINK,
     CATALOGS,
     CONF_CATALOG,
@@ -100,14 +99,8 @@ class SeeASatelliteConfigFlow(ConfigFlow, domain=DOMAIN):
             catalog = user_input[CONF_CATALOG]
             await self.async_set_unique_id(f"{latitude:.4f}_{longitude:.4f}_{catalog}")
             self._abort_if_unique_id_configured()
-            session = async_get_clientsession(self.hass)
             try:
-                # The public catalog's elements come from CelesTrak, which
-                # rate limits; checking the magnitude list is enough here.
-                if catalog == CATALOG_PUBLIC:
-                    await fetch_quicksat(session)
-                else:
-                    await fetch_site_catalog(session, catalog)
+                await fetch_site_catalog(async_get_clientsession(self.hass), catalog)
             except CatalogError:
                 errors["base"] = "cannot_connect"
             except Exception:
