@@ -13,7 +13,7 @@ from homeassistant.core import HomeAssistant
 
 from tests.common import MockConfigEntry, async_load_json_array_fixture
 
-# The fixture catalog's satellites pass Veenendaal from 19:08:40 UTC.
+# The fixture catalog's satellites pass the test location from 19:08:36 UTC.
 NOW = datetime(2026, 10, 10, 19, 5, tzinfo=UTC)
 
 
@@ -70,17 +70,13 @@ def mock_setup_entry() -> Generator[AsyncMock]:
 
 @pytest.fixture
 def mock_config_entry() -> MockConfigEntry:
-    """A location in Veenendaal using the website's catalog."""
+    """A test location: the Dom Tower in Utrecht."""
     return MockConfigEntry(
         domain=DOMAIN,
-        title="Veenendaal",
-        unique_id="52.0277_5.5583_brightest",
-        data={
-            "latitude": 52.0277,
-            "longitude": 5.5583,
-            "elevation": 194,
-            "catalog": "brightest",
-        },
+        title="Home",
+        unique_id="52.0907_5.1214",
+        minor_version=2,
+        data={"latitude": 52.0907, "longitude": 5.1214, "elevation": 5},
     )
 
 

@@ -62,10 +62,7 @@ async def test_catalog_restored_from_storage(
     await hass.config_entries.async_setup(mock_config_entry.entry_id)
     await hass.async_block_till_done()
     assert mock_config_entry.state is ConfigEntryState.LOADED
-    assert (
-        hass.states.get("sensor.veenendaal_next_pass").state
-        == "2026-10-10T19:08:40+00:00"
-    )
+    assert hass.states.get("sensor.home_next_pass").state == "2026-10-10T19:08:36+00:00"
 
 
 async def test_fresh_stored_catalog_is_not_downloaded(
@@ -99,18 +96,14 @@ async def test_catalog_shared_and_stored(
     freezer: FrozenDateTimeFactory,
     mock_see_a_satellite: dict[str, AsyncMock],
 ) -> None:
-    """Locations using the same catalog share one download, which is stored."""
+    """All locations share one catalog download, which is stored."""
     freezer.move_to(NOW)
     entries = [
         MockConfigEntry(
             domain=DOMAIN,
             title=title,
-            data={
-                "latitude": lat,
-                "longitude": 5.5,
-                "elevation": 0,
-                "catalog": "brightest",
-            },
+            minor_version=2,
+            data={"latitude": lat, "longitude": 5.5, "elevation": 0},
         )
         for title, lat in (("Home", 52.0), ("Cabin", 60.0))
     ]
@@ -140,6 +133,6 @@ async def test_cloud_cover_failure_is_tolerated(
     async_fire_time_changed(hass)
     await hass.async_block_till_done(wait_background_tasks=True)
     assert mock_see_a_satellite["fetch_cloud_cover"].await_count == 2
-    state = hass.states.get("sensor.veenendaal_next_pass")
+    state = hass.states.get("sensor.home_next_pass")
     assert state.state != "unavailable"
     assert state.attributes["cloud_cover"] is None
